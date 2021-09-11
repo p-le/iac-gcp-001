@@ -1,6 +1,7 @@
 BASE_PATH 			:= $(shell pwd)
 TERRAFORM_VERSION	:= 1.0.6
 GCLOUD_SDK_VERSION	:= 356.0.0-slim
+CREDENTIAL_FILE		:= multicloud-architect-b5e6e149-dba1e9dc20ba.json
 
 .PHONY: build-gcloud-terraform-image
 build-gcloud-terraform-image:
@@ -24,7 +25,8 @@ terraform:
 	@docker container run -it --rm \
 		-v ${BASE_PATH}/gcloud/config:/gcloud/config \
 		-v ${BASE_PATH}/gcloud/credentials:/gcloud/credentials \
+		-v $(BASE_PATH)/src:/work \
+		-e GOOGLE_APPLICATION_CREDENTIALS=/gcloud/credentials/$(CREDENTIAL_FILE) \
 		-e CLOUDSDK_CONFIG=/gcloud/config \
-        --entrypoint terraform \
-		gcloud:$(GCLOUD_SDK_VERSION) \
-			$(ARG)
+		gcloud:$(GCLOUD_SDK_VERSION) terraform $(ARG)
+
